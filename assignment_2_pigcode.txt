@@ -1,0 +1,20 @@
+ load orders.csv 
+ordersCSV = LOAD 'usermaria_devdiplomacyorders1.csv'
+USING PigStorage(';')
+AS
+(game_idchararray,
+unit_idchararray,
+unit_orderchararray,
+locationchararray,
+targetchararray,
+target_destchararray,
+successchararray,
+reasonchararray,
+turn_numchararray);
+foreach_orders = FOREACH ordersCSV GENERATE target AS trgt, location AS lctn;
+filter_orders = FILTER foreach_orders BY trgt == 'Holland';
+goup_orders = GROUP filter_orders BY lctn;
+counts_orders = FOREACH goup_orders GENERATE group as grp, COUNT(filter_orders) AS cnt;
+order_orders = ORDER counts_orders BY grp ASC;
+
+DUMP order_orders;
